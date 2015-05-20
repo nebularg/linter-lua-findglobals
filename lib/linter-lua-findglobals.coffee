@@ -18,11 +18,37 @@ class LinterLuaFindGlobals extends Linter
 
   linterName: 'lua-findglobals'
 
+  whitelist: {}
+
   constructor: (@editor) ->
     super(@editor)
     atom.config.observe 'linter-lua-findglobals.luac', =>
       luac = atom.config.get 'linter-lua-findglobals.luac'
       @cmd = [luac, '-p', '-l']
+
+    atom.config.observe 'linter-lua-findglobals.whitelist', =>
+      files = atom.config.get 'linter-lua-findglobals.whitelist'
+      return unless files?
+
+      @whitelist = {}
+
+      if files.length > 0
+        for file in files.split(',')
+          file = file.trim()
+          fs.readFile file, (err, data) =>
+            if not err
+              for name in data.toString().split('\n')
+                name = name.trim()
+                if name.length > 0
+                  @whitelist[name] = true
+
+            else if err.code is 'ENOENT'
+              # Show a small notification at the bottom of the screen
+              title = "#{@linterName}: Unable to open file \"#{file}\""
+              title = title + " (#{err.path})" if file != err.path
+              message = new MessagePanelView(title: title)
+              message.attach()
+              message.toggle() # Fold the panel
 
   destroy: ->
     super()
@@ -43,14 +69,14 @@ class LinterLuaFindGlobals extends Linter
     XRegExp.forEach @editor.getText(), /^\s*\-\-\s*GLOBALS:\s*(.*)$/gm, (match, i) ->
         XRegExp.forEach match, /[\w_]+/, (match, j) ->
           globals[match[0]] = true if j > 0 # don't match GLOBALS from the first capture (?!)
-    log 'GLOBALS', globals
+    log 'GLOBALS', globals, whitelist
 
     stdout = (output) =>
       log 'stdout', output
       # grep the bytecode output for GETGLOBAL and SETGLOBAL
       XRegExp.forEach output, /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/, (match) =>
         [_, line, command, _, name] = match
-        if not globals[name]
+        if not globals[name] and not @whitelist[name]
           line = +line
           colStart = @editor.lineTextForScreenRow(line - 1).search(name) + 1
           colEnd = colStart + name.length
