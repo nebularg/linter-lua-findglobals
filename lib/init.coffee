@@ -1,9 +1,5 @@
 module.exports =
   config:
-    lua:
-      type: 'string'
-      default: 'lua'
-      description: 'The executable path to lua.'
     luac:
       type: 'string'
       default: 'luac'
