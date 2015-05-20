@@ -1,0 +1,25 @@
+{
+  "name": "linter-lua-findglobals",
+  "linter-package": true,
+  "activationCommands": {},
+  "main": "./lib/init",
+  "version": "0.1.0",
+  "description": "Check global variable access on the fly.",
+  "readme": "# linter-lua-findglobals\n\nCheck global variable access on the fly. Based on the [FindGlobals](http://www.wowace.com/addons/findglobals/) lua script by Mikk.\n\nDue to the way that `luac` works, global variables will only be highlighted while there is not an error found in the file.\n\n###  What do I need to know about globals for?\n\nTo optimize performance, you may want to declare `local` versions of commonly used functions and variables rather than make global namespace lookups.\n\nSome global variables you may be okay with being global accesses (or in fact NEED them to because they can be hooked or changed), for those you have two options:\n1.  Add one or more `-- GLOBALS: SomeFunc, SomeOtherFunc, SomeGlobalVariable` lines to the source file. This will ignore the variables.\n2.  Put a `local _G = _G` at the top of the file, and then access them through `_G.SomeFunc`. This is actually somewhat faster than accessing them directly, believe it or not. Direct global access involves looking up the global variable table first!\n\nAnother benefit is finding the odd misspelled variable name or blocks of code that you may have copy/pasted from another source but forgot to update variables used.\n\n## Configuration\n\nPackages -> linter-lua-findglobals -> Settings:\n\n* **level** The error level used for messages. (Note: info messages are hidden by default in Linter's settings)\n* **luac** Path to your `luac` executable.\n\n## TODO\n\n* Fix highlighting multiple variables on one line? (maybe a linter limitation)\n* Add option to exclude globals from an external list and/or change their error level\n* Maybe add back in the options I stripped from the original script (that I never used): separate settings for GETGLOBAL and SETGLOBAL checking in the global and function scopes and allow them to be set per-file in comments\n",
+  "readmeFilename": "README.md",
+  "homepage": "https://github.com/nebularg/linter-lua-findglobals",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nebularg/linter-lua-findglobals"
+  },
+  "bugs": {
+    "url": "https://github.com/nebularg/linter-lua-findglobals/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "atom": ">=0.175.0"
+  },
+  "dependencies": {
+    "xregexp": "2.0.0"
+  }
+}
