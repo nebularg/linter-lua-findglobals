@@ -1,6 +1,7 @@
 fs = require 'fs'
 util = require 'util'
 {BufferedProcess} = require 'atom'
+{MessagePanelView} = require 'atom-message-panel'
 {XRegExp} = require 'xregexp'
 
 log = (args...) ->

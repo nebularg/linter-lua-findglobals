@@ -20,6 +20,7 @@
     "atom": ">=0.175.0"
   },
   "dependencies": {
+    "atom-message-panel": "^1.2.2",
     "xregexp": "2.0.0"
   }
 }
