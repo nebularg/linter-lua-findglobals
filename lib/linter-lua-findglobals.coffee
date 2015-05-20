@@ -23,6 +23,10 @@ class LinterLuaFindGlobals extends Linter
       luac = atom.config.get 'linter-lua-findglobals.luac'
       @cmd = [luac, '-p', '-l']
 
+  destroy: ->
+    super()
+    atom.config.unobserve 'linter-lua-findglobals.luac'
+
   lintFile: (filePath, callback) ->
     # build the command with arguments to lint the file
     {command, args} = @getCmdAndArgs(filePath)
@@ -30,22 +34,22 @@ class LinterLuaFindGlobals extends Linter
     # options for BufferedProcess, same syntax with child_process.spawn
     options = {cwd: @cwd}
 
-    GLOBALS = {}
+    globals = {}
     messages = []
     exited = false
 
     # check for excluded globals in the source file
     XRegExp.forEach @editor.getText(), /^\s*\-\-\s*GLOBALS:\s*(.*)$/gm, (match, i) ->
         XRegExp.forEach match, /[\w_]+/, (match, j) ->
-          GLOBALS[match[0]] = true if j > 0 # don't match GLOBALS from the first capture (?!)
-    log 'GLOBALS', GLOBALS
+          globals[match[0]] = true if j > 0 # don't match GLOBALS from the first capture (?!)
+    log 'GLOBALS', globals
 
     stdout = (output) =>
       log 'stdout', output
       # grep the bytecode output for GETGLOBAL and SETGLOBAL
       XRegExp.forEach output, /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/, (match) =>
         [_, line, command, _, name] = match
-        if not GLOBALS[name]
+        if not globals[name]
           line = +line
           colStart = @editor.lineTextForScreenRow(line - 1).search(name) + 1
           colEnd = colStart + name.length
@@ -111,9 +115,5 @@ class LinterLuaFindGlobals extends Linter
         process.kill()
         warn "command `#{command}` timed out after #{@executionTimeout} ms"
       , @executionTimeout
-
-  destroy: ->
-    super()
-    atom.config.unobserve 'linter-lua-findglobals.luac'
 
 module.exports = LinterLuaFindGlobals
