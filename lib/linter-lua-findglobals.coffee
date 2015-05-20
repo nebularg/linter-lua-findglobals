@@ -1,9 +1,13 @@
 fs = require 'fs'
 util = require 'util'
-{Range, Point, BufferedProcess} = require 'atom'
-XRegExp = null
+{BufferedProcess} = require 'atom'
+{XRegExp} = require 'xregexp'
 
-packagePath = atom.packages.resolvePackagePath 'linter-lua-findglobals'
+log = (args...) ->
+  console.log args... if atom.config.get 'linter.lintDebug'
+
+warn = (args...) ->
+  console.warn args... if atom.config.get 'linter.lintDebug'
 
 linterPath = atom.packages.resolvePackagePath 'linter'
 Linter = require "#{linterPath}/lib/linter"
@@ -13,25 +17,13 @@ class LinterLuaFindGlobals extends Linter
 
   linterName: 'lua-findglobals'
 
-  errorStream: 'stdout'
-
-  defaultLevel: 'warning'
-
   constructor: (@editor) ->
     super(@editor)
-    atom.config.observe 'linter-lua-findglobals.lua', => @updateCommand()
-    atom.config.observe 'linter-lua-findglobals.luac', => @updateCommand()
-    atom.config.observe 'linter-lua-findglobals.level', => @updateOptions()
-
-  updateOptions: ->
-    @defaultLevel = atom.config.get 'linter-lua-findglobals.level'
-
-  updateCommand: ->
-    luac = atom.config.get 'linter-lua-findglobals.luac'
-    @cmd = [luac, '-p', '-l']
+    atom.config.observe 'linter-lua-findglobals.luac', =>
+      luac = atom.config.get 'linter-lua-findglobals.luac'
+      @cmd = [luac, '-p', '-l']
 
   lintFile: (filePath, callback) ->
-    #console.log 'lintFile', @editor
     # build the command with arguments to lint the file
     {command, args} = @getCmdAndArgs(filePath)
 
@@ -42,27 +34,27 @@ class LinterLuaFindGlobals extends Linter
     messages = []
     exited = false
 
-    XRegExp ?= require('xregexp').XRegExp
-
     # check for excluded globals in the source file
     XRegExp.forEach @editor.getText(), /^\s*\-\-\s*GLOBALS:\s*(.*)$/gm, (match, i) ->
         XRegExp.forEach match, /[\w_]+/, (match, j) ->
           GLOBALS[match[0]] = true if j > 0 # don't match GLOBALS from the first capture (?!)
-    #console.log 'GLOBALS', GLOBALS
+    log 'GLOBALS', GLOBALS
 
-    stdout = (data) =>
+    stdout = (output) =>
+      log 'stdout', output
       # grep the bytecode output for GETGLOBAL and SETGLOBAL
-      XRegExp.forEach data, /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/, (match) =>
-        [ _, line, command, _, name ] = match
+      XRegExp.forEach output, /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/, (match) =>
+        [_, line, command, _, name] = match
         if not GLOBALS[name]
-          colStart = @editor.lineTextForScreenRow(+line - 1).search(name) + 1
+          line = +line
+          colStart = @editor.lineTextForScreenRow(line - 1).search(name) + 1
           colEnd = colStart + name.length
+          level = atom.config.get 'linter-lua-findglobals.level'
           #console.log util.format("[%d] %d-%d %s\t%s", line, colStart, colEnd, command, name)
 
           messages.push {
             line: line,
-            col: 0,
-            level: @defaultLevel,
+            level: level,
             message: "#{command} #{name}",
             linter: @linterName,
             range: @computeRange {
@@ -73,16 +65,43 @@ class LinterLuaFindGlobals extends Linter
             }
           }
 
+    stderr = (output) ->
+      warn 'stderr', output
+
     exit = (code) =>
       exited = true
       callback messages
 
-    console.log 'findglobals', {command, args, options}
-    process = new BufferedProcess({command, args, options, stdout, stderr: null, exit})
+    log 'beforeSpawnProcess:', command, args, options
+    process = new BufferedProcess({command, args, options, stdout, stderr, exit})
     process.onWillThrowError (err) =>
       return unless err?
       if err.error.code is 'ENOENT'
-        console.log "The linter binary '#{@linterName}' cannot be found."
+        ignored = atom.config.get('linter.ignoredLinterErrors')
+        subtle = atom.config.get('linter.subtleLinterErrors')
+        warningMessageTitle = "The linter binary '#{@linterName}' cannot be found."
+        if @linterName in subtle
+          # Show a small notification at the bottom of the screen
+          message = new MessagePanelView(title: warningMessageTitle)
+          message.attach()
+          message.toggle() # Fold the panel
+        else if @linterName not in ignored
+          # Prompt user, ask if they want to fully or partially ignore warnings
+          atom.confirm
+            message: warningMessageTitle
+            detailedMessage: 'Is it on your path? Please follow the installation
+            guide for your linter. Would you like further notifications to be
+            fully or partially suppressed? You can change this later in the
+            linter package settings.'
+            buttons:
+              Fully: =>
+                ignored.push @linterName
+                atom.config.set('linter.ignoredLinterErrors', ignored)
+              Partially: =>
+                subtle.push @linterName
+                atom.config.set('linter.subtleLinterErrors', subtle)
+        else
+          console.log warningMessageTitle
         err.handle()
 
     # Kill the linter process if it takes too long
@@ -95,8 +114,6 @@ class LinterLuaFindGlobals extends Linter
 
   destroy: ->
     super()
-    atom.config.unobserve 'linter-lua-findglobals.lua'
     atom.config.unobserve 'linter-lua-findglobals.luac'
-    atom.config.unobserve 'linter-lua-findglobals.level'
 
 module.exports = LinterLuaFindGlobals
