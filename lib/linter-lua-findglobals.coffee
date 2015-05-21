@@ -69,7 +69,7 @@ class LinterLuaFindGlobals extends Linter
     XRegExp.forEach @editor.getText(), /^\s*\-\-\s*GLOBALS:\s*(.*)$/gm, (match, i) ->
         XRegExp.forEach match, /[\w_]+/, (match, j) ->
           globals[match[0]] = true if j > 0 # don't match GLOBALS from the first capture (?!)
-    log 'GLOBALS', globals, whitelist
+    log 'GLOBALS', globals, @whitelist
 
     stdout = (output) =>
       log 'stdout', output
