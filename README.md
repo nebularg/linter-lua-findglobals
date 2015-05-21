@@ -25,5 +25,4 @@ Packages -> linter-lua-findglobals -> Settings:
 ## TODO
 
 * Fix highlighting multiple variables on one line? (maybe a linter limitation)
-* Add option to exclude globals from an external list and/or change their error level
-* Maybe add back in the options I stripped from the original script (that I never used): separate settings for GETGLOBAL and SETGLOBAL checking in the global and function scopes and allow them to be set per-file in comments
+* Add back in the options I stripped from the original script (that I never used)? Separate settings for GETGLOBAL and SETGLOBAL checking in the global and function scopes and allow them to be set per-file in comments
