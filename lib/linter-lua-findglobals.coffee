@@ -1,7 +1,6 @@
 fs = require 'fs'
 util = require 'util'
 {BufferedProcess} = require 'atom'
-{MessagePanelView} = require 'atom-message-panel'
 {XRegExp} = require 'xregexp'
 
 log = (args...) ->
@@ -33,7 +32,7 @@ class LinterLuaFindGlobals extends Linter
       for file in files.split(',')
         file = file.trim()
         fs.readFile file, (err, data) =>
-          return log 'Unable to open file', file if err
+          return warn 'Unable to open file', file if err
 
           for name in data.toString().split('\n')
             name = name.trim()
@@ -95,35 +94,6 @@ class LinterLuaFindGlobals extends Linter
 
     log 'beforeSpawnProcess:', command, args, options
     process = new BufferedProcess({command, args, options, stdout, stderr, exit})
-    process.onWillThrowError (err) =>
-      return unless err?
-      if err.error.code is 'ENOENT'
-        ignored = atom.config.get('linter.ignoredLinterErrors')
-        subtle = atom.config.get('linter.subtleLinterErrors')
-        warningMessageTitle = "The linter binary '#{@linterName}' cannot be found."
-        if @linterName in subtle
-          # Show a small notification at the bottom of the screen
-          message = new MessagePanelView(title: warningMessageTitle)
-          message.attach()
-          message.toggle() # Fold the panel
-        else if @linterName not in ignored
-          # Prompt user, ask if they want to fully or partially ignore warnings
-          atom.confirm
-            message: warningMessageTitle
-            detailedMessage: 'Is it on your path? Please follow the installation
-            guide for your linter. Would you like further notifications to be
-            fully or partially suppressed? You can change this later in the
-            linter package settings.'
-            buttons:
-              Fully: =>
-                ignored.push @linterName
-                atom.config.set('linter.ignoredLinterErrors', ignored)
-              Partially: =>
-                subtle.push @linterName
-                atom.config.set('linter.subtleLinterErrors', subtle)
-        else
-          console.log warningMessageTitle
-        err.handle()
 
     # Kill the linter process if it takes too long
     if @executionTimeout > 0
