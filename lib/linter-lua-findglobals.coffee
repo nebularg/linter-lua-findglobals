@@ -59,16 +59,16 @@ class LinterLuaFindGlobals extends Linter
     log 'GLOBALS', globals, @whitelist
 
     stdout = (output) =>
-      log 'stdout', output
       # grep the bytecode output for GETGLOBAL and SETGLOBAL
       XRegExp.forEach output, /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/, (match) =>
+        log 'stdout', match
         [_, line, command, _, name] = match
         if not globals[name] and not @whitelist[name]
           line = +line
           colStart = @editor.lineTextForBufferRow(line - 1).search(name) + 1
           colEnd = colStart + name.length
           level = atom.config.get 'linter-lua-findglobals.level'
-          #console.log util.format("[%d] %d-%d %s\t%s", line, colStart, colEnd, command, name)
+          #console.log util.format("%s:%d:%d:%d %s\t%s", @editor.getTitle(), line, colStart, colEnd, command, name)
 
           messages.push {
             line: line,
