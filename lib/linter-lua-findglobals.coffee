@@ -21,10 +21,10 @@ class LinterLuaFindGlobals extends Linter
 
   constructor: (@editor) ->
     super(@editor)
-    atom.config.observe 'linter-lua-findglobals.luac', (luac) =>
+    @subscriptions.add atom.config.observe 'linter-lua-findglobals.luac', (luac) =>
       @cmd = [luac, '-p', '-l']
 
-    atom.config.observe 'linter-lua-findglobals.whitelist', (files) =>
+    @subscriptions.add atom.config.observe 'linter-lua-findglobals.whitelist', (files) =>
       return unless files?
 
       @whitelist = {}
@@ -40,8 +40,6 @@ class LinterLuaFindGlobals extends Linter
 
   destroy: ->
     super()
-    atom.config.unobserve 'linter-lua-findglobals.luac'
-    atom.config.unobserve 'linter-lua-findglobals.whitelist'
 
   lintFile: (filePath, callback) ->
     # build the command with arguments to lint the file
