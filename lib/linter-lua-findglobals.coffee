@@ -92,6 +92,10 @@ class LinterLuaFindGlobals extends Linter
 
     log 'beforeSpawnProcess:', command, args, options
     process = new BufferedProcess({command, args, options, stdout, stderr, exit})
+    process.onWillThrowError (err) =>
+      if err? and err.error.code is 'ENOENT'
+        warn "The linter binary '#{@linterName}' cannot be found."
+        err.handle()
 
     # Kill the linter process if it takes too long
     if @executionTimeout > 0
