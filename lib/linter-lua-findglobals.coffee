@@ -65,7 +65,7 @@ class LinterLuaFindGlobals extends Linter
         [_, line, command, _, name] = match
         if not globals[name] and not @whitelist[name]
           line = +line
-          colStart = @editor.lineTextForScreenRow(line - 1).search(name) + 1
+          colStart = @editor.lineTextForBufferRow(line - 1).search(name) + 1
           colEnd = colStart + name.length
           level = atom.config.get 'linter-lua-findglobals.level'
           #console.log util.format("[%d] %d-%d %s\t%s", line, colStart, colEnd, command, name)
