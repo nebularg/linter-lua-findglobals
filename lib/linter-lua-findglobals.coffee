@@ -63,22 +63,22 @@ class LinterLuaFindGlobals extends Linter
     # set directives from the source file
     GETGLOBALFILE = atom.config.get 'linter-lua-findglobals.GETGLOBALFILE'
     result = /^\s*\-\-\s*GETGLOBALFILE\s+(ON|OFF)$/gm.exec source
-    if result
+    if result?
       GETGLOBALFILE = if result[1] == 'ON' then true else false
 
     GETGLOBALFUNC = atom.config.get 'linter-lua-findglobals.GETGLOBALFUNC'
     result = /^\s*\-\-\s*GETGLOBALFUNC\s+(ON|OFF)$/gm.exec source
-    if result
+    if result?
       GETGLOBALFUNC = if result[1] == 'ON' then true else false
 
     SETGLOBALFILE = atom.config.get 'linter-lua-findglobals.SETGLOBALFILE'
     result = /^\s*\-\-\s*SETGLOBALFILE\s+(ON|OFF)$/gm.exec source
-    if result
+    if result?
       SETGLOBALFILE = if result[1] == 'ON' then true else false
 
     SETGLOBALFUNC = atom.config.get 'linter-lua-findglobals.SETGLOBALFUNC'
     result = /^\s*\-\-\s*SETGLOBALFUNC\s+(ON|OFF)$/gm.exec source
-    if result
+    if result?
       SETGLOBALFUNC = if result[1] == 'ON' then true else false
 
     stdout = (output) =>
@@ -90,7 +90,8 @@ class LinterLuaFindGlobals extends Linter
             funcScope = true
           else if (/SETGLOBAL/.test(line) and ((funcScope and SETGLOBALFUNC) or (not funcScope and SETGLOBALFILE))) or
                   (/GETGLOBAL/.test(line) and ((funcScope and GETGLOBALFUNC) or (not funcScope and GETGLOBALFILE)))
-            [_, lineNumber, command, _, name] = /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/.exec line
+            result = /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/.exec line
+            [_, lineNumber, command, _, name] = result if result?
             if not globals[name] and not @whitelist[name]
               lineNumber = +lineNumber
               colStart = @editor.lineTextForBufferRow(lineNumber - 1).search(name) + 1
