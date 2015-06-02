@@ -62,22 +62,22 @@ class LinterLuaFindGlobals extends Linter
 
     # set directives from the source file
     GETGLOBALFILE = atom.config.get 'linter-lua-findglobals.GETGLOBALFILE'
-    result = /^\s*\-\-\s*GETGLOBALFILE\s+(ON|OFF)$/gm.exec source
+    result = /^\s*\-\-\s*GETGLOBALFILE\s+(ON|OFF)$/m.exec source
     if result?
       GETGLOBALFILE = if result[1] == 'ON' then true else false
 
     GETGLOBALFUNC = atom.config.get 'linter-lua-findglobals.GETGLOBALFUNC'
-    result = /^\s*\-\-\s*GETGLOBALFUNC\s+(ON|OFF)$/gm.exec source
+    result = /^\s*\-\-\s*GETGLOBALFUNC\s+(ON|OFF)$/m.exec source
     if result?
       GETGLOBALFUNC = if result[1] == 'ON' then true else false
 
     SETGLOBALFILE = atom.config.get 'linter-lua-findglobals.SETGLOBALFILE'
-    result = /^\s*\-\-\s*SETGLOBALFILE\s+(ON|OFF)$/gm.exec source
+    result = /^\s*\-\-\s*SETGLOBALFILE\s+(ON|OFF)$/m.exec source
     if result?
       SETGLOBALFILE = if result[1] == 'ON' then true else false
 
     SETGLOBALFUNC = atom.config.get 'linter-lua-findglobals.SETGLOBALFUNC'
-    result = /^\s*\-\-\s*SETGLOBALFUNC\s+(ON|OFF)$/gm.exec source
+    result = /^\s*\-\-\s*SETGLOBALFUNC\s+(ON|OFF)$/m.exec source
     if result?
       SETGLOBALFUNC = if result[1] == 'ON' then true else false
 
