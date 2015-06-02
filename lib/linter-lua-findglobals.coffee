@@ -51,37 +51,65 @@ class LinterLuaFindGlobals extends Linter
     globals = {}
     messages = []
     exited = false
+    funcScope = false
 
     # check for excluded globals in the source file
-    XRegExp.forEach @editor.getText(), /^\s*\-\-\s*GLOBALS:\s*(.*)$/gm, (match, i) ->
+    source = @editor.getText()
+    XRegExp.forEach source, /^\s*\-\-\s*GLOBALS:\s*(.*)$/gm, (match, i) ->
         XRegExp.forEach match[1...], /[\w_]+/, (match, j) -> # don't match GLOBALS from the first capture
           globals[match[0]] = true
     log 'GLOBALS', globals, @whitelist
 
+    # set directives from the source file
+    GETGLOBALFILE = atom.config.get 'linter-lua-findglobals.GETGLOBALFILE'
+    result = /^\s*\-\-\s*GETGLOBALFILE\s+(ON|OFF)$/gm.exec source
+    if result
+      GETGLOBALFILE = if result[1] == 'ON' then true else false
+
+    GETGLOBALFUNC = atom.config.get 'linter-lua-findglobals.GETGLOBALFUNC'
+    result = /^\s*\-\-\s*GETGLOBALFUNC\s+(ON|OFF)$/gm.exec source
+    if result
+      GETGLOBALFUNC = if result[1] == 'ON' then true else false
+
+    SETGLOBALFILE = atom.config.get 'linter-lua-findglobals.SETGLOBALFILE'
+    result = /^\s*\-\-\s*SETGLOBALFILE\s+(ON|OFF)$/gm.exec source
+    if result
+      SETGLOBALFILE = if result[1] == 'ON' then true else false
+
+    SETGLOBALFUNC = atom.config.get 'linter-lua-findglobals.SETGLOBALFUNC'
+    result = /^\s*\-\-\s*SETGLOBALFUNC\s+(ON|OFF)$/gm.exec source
+    if result
+      SETGLOBALFUNC = if result[1] == 'ON' then true else false
+
     stdout = (output) =>
       # grep the bytecode output for GETGLOBAL and SETGLOBAL
-      XRegExp.forEach output, /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/, (match) =>
-        log 'stdout', match
-        [_, line, command, _, name] = match
-        if not globals[name] and not @whitelist[name]
-          line = +line
-          colStart = @editor.lineTextForBufferRow(line - 1).search(name) + 1
-          colEnd = colStart + name.length
-          level = atom.config.get 'linter-lua-findglobals.level'
-          #console.log util.format("%s:%d:%d:%d %s\t%s", @editor.getTitle(), line, colStart, colEnd, command, name)
+      for line in output.split('\n')
+          if /^main </.test line
+            funcScope = false
+          else if /^function </.test line
+            funcScope = true
+          else if (/SETGLOBAL/.test(line) and ((funcScope and SETGLOBALFUNC) or (not funcScope and SETGLOBALFILE))) or
+                  (/GETGLOBAL/.test(line) and ((funcScope and GETGLOBALFUNC) or (not funcScope and GETGLOBALFILE)))
+            [_, lineNumber, command, _, name] = /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/.exec line
+            if not globals[name] and not @whitelist[name]
+              lineNumber = +lineNumber
+              colStart = @editor.lineTextForBufferRow(lineNumber - 1).search(name) + 1
+              colEnd = colStart + name.length
+              level = atom.config.get 'linter-lua-findglobals.level'
+              #console.log util.format("%s:%d:%d:%d %s %s", @editor.getTitle(), lineNumber, colStart, colEnd, command, name)
 
-          messages.push {
-            line: line,
-            level: level,
-            message: "#{command} #{name}",
-            linter: @linterName,
-            range: @computeRange {
-              line: line,
-              col: 0,
-              colStart: colStart,
-              colEnd: colEnd
-            }
-          }
+              messages.push {
+                line: lineNumber,
+                level: level,
+                message: "#{command} #{name}",
+                linter: @linterName,
+                range: @computeRange {
+                  line: lineNumber,
+                  col: 0,
+                  colStart: colStart,
+                  colEnd: colEnd
+                }
+              }
 
     stderr = (output) ->
       warn 'stderr', output
