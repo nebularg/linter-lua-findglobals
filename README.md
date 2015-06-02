@@ -19,10 +19,8 @@ Another benefit is finding the odd misspelled variable name or blocks of code th
 
 Packages -> linter-lua-findglobals -> Settings:
 
-* **level** The error level used for messages. (Note: info messages are hidden by default in Linter's settings)
-* **luac** Path to your `luac` executable.
+* Set the path to your `luac` executable
 
 ## TODO
 
 * Fix highlighting multiple variables on one line? (maybe a linter limitation)
-* Add back in the options I stripped from the original script (that I never used)? Separate settings for GETGLOBAL and SETGLOBAL checking in the global and function scopes and allow them to be set per-file in comments
