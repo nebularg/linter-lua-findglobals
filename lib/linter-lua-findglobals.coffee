@@ -92,7 +92,7 @@ class LinterLuaFindGlobals extends Linter
                   (/GETGLOBAL/.test(line) and ((funcScope and GETGLOBALFUNC) or (not funcScope and GETGLOBALFILE)))
             result = /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/.exec line
             [_, lineNumber, command, _, name] = result if result?
-            if not globals[name] and not @whitelist[name]
+            if name? and not globals[name] and not @whitelist[name]
               lineNumber = +lineNumber
               colStart = @editor.lineTextForBufferRow(lineNumber - 1).search(name) + 1
               colEnd = colStart + name.length
