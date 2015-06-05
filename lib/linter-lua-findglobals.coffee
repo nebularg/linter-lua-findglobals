@@ -3,14 +3,9 @@ util = require 'util'
 {BufferedProcess} = require 'atom'
 {XRegExp} = require 'xregexp'
 
-log = (args...) ->
-  console.log args... if atom.config.get 'linter.lintDebug'
-
-warn = (args...) ->
-  console.warn args... if atom.config.get 'linter.lintDebug'
-
 linterPath = atom.packages.resolvePackagePath 'linter'
 Linter = require "#{linterPath}/lib/linter"
+{log, warn} = require "#{linterPath}/lib/utils"
 
 class LinterLuaFindGlobals extends Linter
   @syntax: 'source.lua'
