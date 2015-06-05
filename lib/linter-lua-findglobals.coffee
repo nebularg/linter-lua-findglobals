@@ -29,8 +29,7 @@ class LinterLuaFindGlobals extends Linter
 
       @whitelist = {}
 
-      for file in files.split(',')
-        file = file.trim()
+      for file in files
         fs.readFile file, (err, data) =>
           return warn 'Unable to open file', file if err
 
