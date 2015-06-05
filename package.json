@@ -4,7 +4,7 @@
   "activationCommands": {},
   "main": "./lib/init",
   "version": "0.2.2",
-  "description": "Check global variable access on the fly.",
+  "description": "Check Lua global variable access on the fly.",
   "repository": "https://github.com/nebularg/linter-lua-findglobals",
   "license": "MIT",
   "engines": {
