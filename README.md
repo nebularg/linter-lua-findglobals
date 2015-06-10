@@ -17,10 +17,19 @@ Another benefit is finding the odd misspelled variable name or blocks of code th
 
 ### Directives in the file
 
-In addition to ignoring globals with
+You can change how the linter reports for a file. These directives can be anywhere in the file and will take effect globally.
 
-    -- GLOBALS: SomeFunc, SomeOtherFunc, SomeGlobalVariable
+**-- GLOBALS:** SomeGlobal, SomeOtherGlobal
+ - The linter will never complain about these, but there is no way to un-GLOBAL an already declared global. There may be multiple of these anywhere in the file.
 
-you can also set GETGLOBALFILE, GETGLOBALFUNC, SETGLOBALFILE, or SETGLOBALFUNC anywhere in the file with
+**-- GETGLOBALFILE** [ON|OFF]
+ - Enable/disable `GETGLOBAL` checks in the global scope. (Default: OFF)
 
-    -- [OPTION NAME] [ON|OFF]
+**-- GETGLOBALFUNC** [ON|OFF]
+ - Enable/disable `GETGLOBAL` checks in functions. (Default: ON)
+
+**-- SETGLOBALFILE** [ON|OFF]
+ - Enable/disable `SETGLOBAL` checks in the global scope. (Default: ON)
+
+**-- SETGLOBALFUNC** [ON|OFF]
+ - Enable/disable `SETGLOBAL` checks in functions. (Default: ON)
