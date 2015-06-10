@@ -14,3 +14,13 @@ Some global variables you may be okay with being global accesses (or in fact NEE
 2.  Put a `local _G = _G` at the top of the file, and then access them through `_G.SomeFunc`. This is actually somewhat faster than accessing them directly, believe it or not. Direct global access involves looking up the global variable table first!
 
 Another benefit is finding the odd misspelled variable name or blocks of code that you may have copy/pasted from another source but forgot to update variables used.
+
+### Directives in the file
+
+In addition to ignoring globals with
+
+    -- GLOBALS: SomeFunc, SomeOtherFunc, SomeGlobalVariable
+
+you can also set GETGLOBALFILE, GETGLOBALFUNC, SETGLOBALFILE, or SETGLOBALFUNC anywhere in the file with
+
+    -- [OPTION NAME] [ON|OFF]
