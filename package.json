@@ -2,7 +2,7 @@
   "name": "linter-lua-findglobals",
   "linter-package": true,
   "main": "./lib/init",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Check Lua global variable access on the fly.",
   "repository": "https://github.com/nebularg/linter-lua-findglobals",
   "license": "MIT",
