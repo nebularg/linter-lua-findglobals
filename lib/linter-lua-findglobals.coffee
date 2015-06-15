@@ -58,22 +58,26 @@ class LinterLuaFindGlobals extends Linter
     GETGLOBALFILE = atom.config.get 'linter-lua-findglobals.GETGLOBALFILE'
     result = /^\s*\-\-\s*GETGLOBALFILE\s+(ON|OFF)$/m.exec source
     if result?
-      GETGLOBALFILE = if result[1] == 'ON' then true else false
+      if result[1] == 'ON' then GETGLOBALFILE = true
+      if result[1] == 'OFF' then GETGLOBALFILE = false
 
     GETGLOBALFUNC = atom.config.get 'linter-lua-findglobals.GETGLOBALFUNC'
     result = /^\s*\-\-\s*GETGLOBALFUNC\s+(ON|OFF)$/m.exec source
     if result?
-      GETGLOBALFUNC = if result[1] == 'ON' then true else false
+      if result[1] == 'ON' then GETGLOBALFUNC = true
+      if result[1] == 'OFF' then GETGLOBALFUNC = false
 
     SETGLOBALFILE = atom.config.get 'linter-lua-findglobals.SETGLOBALFILE'
     result = /^\s*\-\-\s*SETGLOBALFILE\s+(ON|OFF)$/m.exec source
     if result?
-      SETGLOBALFILE = if result[1] == 'ON' then true else false
+      if result[1] == 'ON' then SETGLOBALFILE = true
+      if result[1] == 'OFF' then SETGLOBALFILE = false
 
     SETGLOBALFUNC = atom.config.get 'linter-lua-findglobals.SETGLOBALFUNC'
     result = /^\s*\-\-\s*SETGLOBALFUNC\s+(ON|OFF)$/m.exec source
     if result?
-      SETGLOBALFUNC = if result[1] == 'ON' then true else false
+      if result[1] == 'ON' then SETGLOBALFUNC = true
+      if result[1] == 'OFF' then SETGLOBALFUNC = false
 
     stdout = (output) =>
       # grep the bytecode output for GETGLOBAL and SETGLOBAL
