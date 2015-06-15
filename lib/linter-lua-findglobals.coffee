@@ -32,9 +32,6 @@ class LinterLuaFindGlobals extends Linter
             name = name.trim()
             @whitelist[name] = true if name.length > 0
 
-  destroy: ->
-    super()
-
   lintFile: (filePath, callback) ->
     # build the command with arguments to lint the file
     {command, args} = @getCmdAndArgs(filePath)
