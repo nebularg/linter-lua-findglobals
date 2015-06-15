@@ -10,7 +10,7 @@ Linter = require "#{linterPath}/lib/linter"
 class LinterLuaFindGlobals extends Linter
   @syntax: 'source.lua'
 
-  linterName: 'lua-findglobals'
+  linterName: 'findglobals'
 
   whitelist: {}
 
