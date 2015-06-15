@@ -2,6 +2,7 @@ fs = require 'fs'
 util = require 'util'
 {BufferedProcess} = require 'atom'
 {XRegExp} = require 'xregexp'
+stds = require './stds'
 
 linterPath = atom.packages.resolvePackagePath 'linter'
 Linter = require "#{linterPath}/lib/linter"
@@ -39,6 +40,7 @@ class LinterLuaFindGlobals extends Linter
     # options for BufferedProcess, same syntax with child_process.spawn
     options = {cwd: @cwd}
 
+    stdGlobals = stds[atom.config.get 'linter-lua-findglobals.ignoreStandardGlobals']
     globals = {}
     messages = []
     exited = false
@@ -87,7 +89,7 @@ class LinterLuaFindGlobals extends Linter
                   (/GETGLOBAL/.test(line) and ((funcScope and GETGLOBALFUNC) or (not funcScope and GETGLOBALFILE)))
             result = /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/.exec line
             [_, lineNumber, command, _, name] = result if result?
-            if name? and not globals[name] and not @whitelist[name]
+            if name? and not globals[name] and not @whitelist[name] and not stdGlobals[name]
               lineNumber = +lineNumber
               colStart = @editor.lineTextForBufferRow(lineNumber - 1).search(name) + 1
               colEnd = colStart + name.length

@@ -9,6 +9,11 @@ module.exports =
       enum: ['info', 'warning', 'error']
       default: 'warning'
       description: 'The error level used for messages. (Note: info messages are hidden by default in Linter\'s settings)'
+    ignoreStandardGlobals:
+      type: 'string'
+      enum: ['none', 'lua51', 'lua52', 'lua53', 'luajit', 'min', 'max']
+      default: 'none'
+      description: '\'min\' is the intersection and \'max\' is the union of globals for the different versions.'
     whitelist:
       type: 'array'
       default: []
