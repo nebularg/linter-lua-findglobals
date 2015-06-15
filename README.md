@@ -4,7 +4,7 @@ Check Lua global variable access on the fly. Based on the [FindGlobals](http://w
 
 Due to the way that `luac` works, global variables will only be highlighted while there is not an error found in the file.
 
-###  What do I need to know about globals for?
+##  What do I need to know about globals for?
 
 To optimize performance, you may want to declare `local` versions of commonly used functions and variables rather than make global namespace lookups.
 
@@ -15,7 +15,7 @@ Some global variables you may be okay with being global accesses (or in fact NEE
 
 Another benefit is finding the odd misspelled variable name or blocks of code that you may have copy/pasted from another source but forgot to update variables used.
 
-### Directives in the file
+## Directives in the file
 
 You can change how the linter reports for a file. These directives can be anywhere in the file and will take effect globally.
 
@@ -33,3 +33,8 @@ You can change how the linter reports for a file. These directives can be anywhe
 
 **-- SETGLOBALFUNC** [ON|OFF]
  - Enable/disable `SETGLOBAL` checks in functions. (Default: ON)
+
+## Issues
+
+ - Only the first global is highlighted when multiple are found on the same line
+ - Column start/end are guessed (string matched) and can be inaccurate
