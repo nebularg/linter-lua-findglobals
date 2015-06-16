@@ -1,6 +1,6 @@
 fs = require 'fs'
 util = require 'util'
-{BufferedProcess} = require 'atom'
+{BufferedProcess, Range} = require 'atom'
 {XRegExp} = require 'xregexp'
 stds = require './stds'
 
@@ -90,24 +90,23 @@ class LinterLuaFindGlobals extends Linter
             result = /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/.exec line
             [_, lineNumber, command, _, name] = result if result?
             if name? and not globals[name] and not @whitelist[name] and not stdGlobals[name]
-              lineNumber = +lineNumber
-              colStart = @editor.lineTextForBufferRow(lineNumber - 1).search(name) + 1
-              colEnd = colStart + name.length
+              lineNumber = +lineNumber - 1
+              text = @editor.lineTextForBufferRow(lineNumber)
+              colStart = text.search(name) or 0
+              colEnd = if colStart == -1 then text.length else colStart + name.length
               level = atom.config.get 'linter-lua-findglobals.level'
-              #console.log util.format("%s:%d:%d:%d %s %s", @editor.getTitle(), lineNumber, colStart, colEnd, command, name)
 
-              messages.push {
-                line: lineNumber,
-                level: level,
-                message: "#{command} #{name}",
-                linter: @linterName,
-                range: @computeRange {
-                  line: lineNumber,
-                  col: 0,
-                  colStart: colStart,
-                  colEnd: colEnd
-                }
-              }
+              message =
+                line: lineNumber + 1
+                level: level
+                message: "#{command} #{name}"
+                linter: @linterName
+                range: new Range(
+                  [lineNumber, colStart],
+                  [lineNumber, colEnd]
+                )
+              messages.push message
+              #console.log message
 
     stderr = (output) ->
       warn 'stderr', output
