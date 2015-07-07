@@ -4,11 +4,16 @@ module.exports =
       type: 'string'
       default: 'luac'
       description: 'The executable path to luac.'
-    level:
+    levelGet:
       type: 'string'
       enum: ['info', 'warning', 'error']
       default: 'warning'
-      description: 'The error level used for messages. (Note: info messages are hidden by default in Linter\'s settings)'
+      title: 'Error Level for GETGLOBAL Messages'
+    levelSet:
+      type: 'string'
+      enum: ['info', 'warning', 'error']
+      default: 'warning'
+      title: 'Error Level for SETGLOBAL Messages'
     ignoreStandardGlobals:
       type: 'string'
       enum: ['none', 'lua51', 'lua52', 'lua53', 'luajit', 'min', 'max']

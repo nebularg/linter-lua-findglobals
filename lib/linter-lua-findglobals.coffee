@@ -88,13 +88,13 @@ class LinterLuaFindGlobals extends Linter
           else if (/SETGLOBAL/.test(line) and ((funcScope and SETGLOBALFUNC) or (not funcScope and SETGLOBALFILE))) or
                   (/GETGLOBAL/.test(line) and ((funcScope and GETGLOBALFUNC) or (not funcScope and GETGLOBALFILE)))
             result = /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/.exec line
-            [_, lineNumber, command, _, name] = result if result?
+            [_, lineNumber, command, type, name] = result if result?
             if name? and not globals[name] and not @whitelist[name] and not stdGlobals[name]
               lineNumber = +lineNumber - 1
               text = @editor.lineTextForBufferRow(lineNumber)
               colStart = text.search(name) or 0
               colEnd = if colStart == -1 then text.length else colStart + name.length
-              level = atom.config.get 'linter-lua-findglobals.level'
+              level = if type is 'GET' then atom.config.get 'linter-lua-findglobals.levelGet' else atom.config.get 'linter-lua-findglobals.levelSet'
 
               message =
                 line: lineNumber + 1
