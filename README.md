@@ -1,8 +1,15 @@
 # linter-lua-findglobals
 
-Check Lua global variable access on the fly. Based on the [FindGlobals](http://www.wowace.com/addons/findglobals/) lua script by Mikk.
+Check Lua files for global variable access on the fly. Based on the [FindGlobals](http://www.wowace.com/addons/findglobals/) lua script by Mikk.
 
 Due to the way that `luac` works, global variables will only be highlighted while there is not an error found in the file.
+
+## Installation
+Before using this package, you must ensure that `luac` is installed on your system. If `luac` is not available on your system path, you will need to set the path in settings:
+
+File -> Settings -> Packages -> Linter Lua Findglobals -> **Luac**
+
+See [http://www.lua.org/manual/5.1/luac.html](http://www.lua.org/manual/5.1/luac.html) for more information about `luac`.
 
 ##  What do I need to know about globals for?
 
