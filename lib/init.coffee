@@ -1,4 +1,5 @@
 fs = require 'fs'
+temp = require 'temp'
 {BufferedProcess, CompositeDisposable} = require 'atom'
 {XRegExp} = require 'xregexp'
 stds = require './stds'
@@ -56,6 +57,7 @@ module.exports =
       Please install https://github.com/AtomLinter/Linter'
       return
     console.log 'activate linter-lua-findglobals'
+    temp.track()
 
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.config.observe 'linter-lua-findglobals.luac', (luac) =>
@@ -117,11 +119,19 @@ module.exports =
             if result[1] == 'ON' then SETGLOBALFUNC = true
             if result[1] == 'OFF' then SETGLOBALFUNC = false
 
+          # handle "on the fly" myself, since the new linter apparently dropped automating this. awesome.
+          try
+            info = temp.openSync 'linter-lua-findglobals-'
+            fs.writeSync info.fd, source
+            fs.closeSync info.fd
+          catch err
+            return reject err
+
           # run the linter
           funcScope = false
           process = new BufferedProcess
             command: @executable
-            args: ['-p', '-l', filePath]
+            args: ['-p', '-l', info.path]
             stdout: (output) =>
               # grep the bytecode output for GETGLOBAL and SETGLOBAL
               for line in output.split('\n')
@@ -150,6 +160,7 @@ module.exports =
                       ]
                     }
             exit: (code) =>
+              temp.cleanup() # will delete temp files on reload/exit, but lets keep things tidy
               return resolve [] unless code is 0
               resolve messages
 
