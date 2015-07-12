@@ -11,12 +11,12 @@ module.exports =
       description: 'The executable path to luac.'
     levelGet:
       type: 'string'
-      enum: ['info', 'warning', 'error']
+      enum: ['trace', 'info', 'warning', 'error']
       default: 'warning'
       title: 'Error Level for GETGLOBAL Messages'
     levelSet:
       type: 'string'
-      enum: ['info', 'warning', 'error']
+      enum: ['trace', 'info', 'warning', 'error']
       default: 'warning'
       title: 'Error Level for SETGLOBAL Messages'
     ignoreStandardGlobals:
