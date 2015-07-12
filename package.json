@@ -1,6 +1,16 @@
 {
   "name": "linter-lua-findglobals",
-  "linter-package": true,
+  "keywords": [
+    "linter",
+    "lua"
+  ],
+  "providedServices": {
+    "linter": {
+      "versions": {
+        "1.0.0": "provideLinter"
+      }
+    }
+  },
   "main": "./lib/init",
   "version": "0.5.0",
   "description": "Check Lua global variable access on the fly.",
