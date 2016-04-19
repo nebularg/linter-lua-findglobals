@@ -51,12 +51,7 @@ module.exports =
       description: 'Enable/disable GETGLOBAL checks in functions.'
 
   activate: ->
-    if not atom.packages.getLoadedPackage 'linter'
-      atom.notifications.addError 'Linter package not found',
-      detail: '[linter-lua-findglobals] `linter` package not found. \
-      Please install https://github.com/AtomLinter/Linter'
-      return
-    console.log 'activate linter-lua-findglobals'
+    require('atom-package-deps').install('linter-lua-findglobals')
     temp.track()
 
     @subscriptions = new CompositeDisposable

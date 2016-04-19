@@ -11,7 +11,6 @@ File -> Settings -> Packages -> Linter Lua Findglobals -> **Luac**
 
 See [http://www.lua.org/manual/5.1/luac.html](http://www.lua.org/manual/5.1/luac.html) for more information about `luac`.
 
- - `$ apm install linter` (if you don't have [Linter](https://atom.io/packages/linter) installed)
  - `$ apm install linter-lua-findglobals`
 
 ##  What do I need to know about globals for?
