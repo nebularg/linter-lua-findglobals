@@ -5,7 +5,7 @@ Check Lua files for global variable access on the fly. Based on the [FindGlobals
 Due to the way that `luac` works, global variables will only be highlighted while there is not an error found in the file.
 
 ## Installation
-Before using this package, you must ensure that you have the linter package and `luac` installed on your system. If `luac` is not available on your system path, you will need to set the path in settings:
+Before using this package, you must ensure that you have `luac` or `luajit` installed on your system. If the program is not available on your system path, you will need to set the path in settings:
 
 File -> Settings -> Packages -> Linter Lua Findglobals -> **Luac**
 
