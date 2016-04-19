@@ -118,8 +118,6 @@ module.exports =
 
         # run the linter
         return helpers.exec(@executable, @parameters, {stdin: source}).then (output) =>
-          console.log 'HERE WE GO!', @whitelist, globals, stdGlobals
-
           messages = []
           funcScope = false
 
