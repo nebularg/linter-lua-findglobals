@@ -117,7 +117,7 @@ module.exports =
           if result[1] == 'OFF' then SETGLOBALFUNC = false
 
         # run the linter
-        return helpers.exec(@executable, @parameters, {stdin: source}).then (output) =>
+        return helpers.exec(@executable, @parameters, { stdin: source, throwOnStdErr: false }).then (output) =>
           messages = []
           funcScope = false
 
