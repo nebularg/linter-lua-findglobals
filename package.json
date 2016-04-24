@@ -12,7 +12,7 @@
     }
   },
   "main": "./lib/init",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Check Lua global variable access on the fly.",
   "repository": "https://github.com/nebularg/linter-lua-findglobals",
   "license": "MIT",
