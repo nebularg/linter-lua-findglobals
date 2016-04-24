@@ -9,7 +9,7 @@ module.exports =
     luac:
       type: 'string'
       default: 'luac'
-      description: 'The executable path to luac or luajit.'
+      description: 'The executable path to luac.'
     levelGet:
       type: 'string'
       enum: ['trace', 'info', 'warning', 'error']
@@ -56,10 +56,7 @@ module.exports =
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.config.observe 'linter-lua-findglobals.luac', (executable) =>
       @executable = executable
-      if executable.indexOf('luajit') isnt -1
-        @parameters = ['-bl', '-']
-      else
-        @parameters = ['-p', '-l', '-']
+      @parameters = ['-p', '-l', '-']
     @subscriptions.add atom.config.observe 'linter-lua-findglobals.whitelist', (files) =>
       return unless files?
       @whitelist = {}
