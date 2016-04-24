@@ -124,20 +124,20 @@ module.exports =
               funcScope = false
             else if /^function </.test line
               funcScope = true
-            else if (/SETGLOBAL/.test(line) and ((funcScope and SETGLOBALFUNC) or (not funcScope and SETGLOBALFILE))) or
-                    (/GETGLOBAL/.test(line) and ((funcScope and GETGLOBALFUNC) or (not funcScope and GETGLOBALFILE)))
-              result = /\[(\d+)\]\s+((GET|SET)GLOBAL).+; ([\w]+)/.exec line
-              [_, lineNumber, command, type, name] = result if result?
+            else if ((/SETGLOBAL/.test(line) or /SETTABUP.+; _ENV/.test(line)) and ((funcScope and SETGLOBALFUNC) or (not funcScope and SETGLOBALFILE))) or
+                    ((/GETGLOBAL/.test(line) or /GETTABUP.+; _ENV/.test(line)) and ((funcScope and GETGLOBALFUNC) or (not funcScope and GETGLOBALFILE)))
+              result = /\[(\d+)\]\s+(?:(GET|SET)(?:GLOBAL|TABUP)).+; (?:_ENV ")?(\w+)/.exec line
+              [_, lineNumber, op, name] = result if result?
               if name? and not globals[name] and not @whitelist[name] and not stdGlobals[name]
                 lineNumber = +lineNumber - 1
                 text = textEditor.lineTextForBufferRow(lineNumber)
                 colStart = text.search(name) or 0
                 colEnd = if colStart == -1 then text.length else colStart + name.length
-                level = if type is 'GET' then atom.config.get 'linter-lua-findglobals.levelGet' else atom.config.get 'linter-lua-findglobals.levelSet'
+                level = if op is 'GET' then atom.config.get 'linter-lua-findglobals.levelGet' else atom.config.get 'linter-lua-findglobals.levelSet'
 
                 messages.push({
                   type: level
-                  text: "#{command} #{name}"
+                  text: "#{op}GLOBAL #{name}"
                   filePath: filePath
                   range: [
                     [lineNumber, colStart],
