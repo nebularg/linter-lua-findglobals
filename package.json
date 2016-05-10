@@ -1,9 +1,14 @@
 {
   "name": "linter-lua-findglobals",
+  "version": "1.2.0",
+  "description": "Check Lua global variable access on the fly.",
   "keywords": [
     "linter",
-    "lua"
+    "lua",
+	"wow"
   ],
+  "repository": "https://github.com/nebularg/linter-lua-findglobals",
+  "license": "Unlicense",
   "providedServices": {
     "linter": {
       "versions": {
@@ -12,10 +17,6 @@
     }
   },
   "main": "./lib/init",
-  "version": "1.2.0",
-  "description": "Check Lua global variable access on the fly.",
-  "repository": "https://github.com/nebularg/linter-lua-findglobals",
-  "license": "MIT",
   "engines": {
     "atom": ">=0.175.0"
   },
